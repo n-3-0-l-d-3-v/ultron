@@ -1137,7 +1137,7 @@ def cmd_vault(args: argparse.Namespace) -> int:
     """
     from ultron import vault
 
-    vault_root = args.vault_root or vault.VAULT_ROOT_DEFAULT
+    vault_root = args.vault_root or vault.default_vault_root()
 
     if args.vault_action == "write":
         note = vault.write_finding(

@@ -28,6 +28,13 @@ from typing import Any
 
 #: Default local vault path, matching agent.yaml's vault_write_path.
 VAULT_ROOT_DEFAULT = "vault/Ultron"
+
+
+def default_vault_root() -> str:
+    """$VAULT_PATH/agents/Ultron when the shared vault is configured, else
+    the repo-local default."""
+    shared = os.environ.get("VAULT_PATH")
+    return os.path.join(shared, "agents", "Ultron") if shared else VAULT_ROOT_DEFAULT
 PENDING_DIRNAME = "pending"
 APPROVED_DIRNAME = "approved"
 
