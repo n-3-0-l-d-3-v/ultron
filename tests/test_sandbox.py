@@ -17,3 +17,18 @@ def test_run_command_is_locked_down(tmp_path):
 def test_build_command_points_at_dockerfile():
     cmd = sandbox.build_image_command(Path("/repo"))
     assert cmd[:2] == ["docker", "build"] and cmd[-1] == str(Path("/repo"))
+
+
+def test_every_subcommand_help_renders():
+    """argparse on Python 3.14 rejects unescaped '%' in help strings; the
+    sandbox container runs 3.14, so every help must format cleanly."""
+    import argparse
+
+    from ultron.cli import build_parser
+
+    parser = build_parser()
+    parser.format_help()
+    for action in parser._actions:
+        if isinstance(action, argparse._SubParsersAction):
+            for sub in action.choices.values():
+                sub.format_help()

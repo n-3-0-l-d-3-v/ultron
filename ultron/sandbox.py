@@ -19,7 +19,7 @@ def build_run_command(sample: Path, project: Path, *, image: str = IMAGE, memory
     return [
         "docker", "run", "--rm",
         "--network", "none",
-        "--read-only", "--tmpfs", "/tmp:rw,size=1g",
+        "--read-only", "--tmpfs", "/tmp:rw,size=1g", "--tmpfs", "/home/analyst:rw,size=512m,mode=1777",
         "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
         "--pids-limit", "512", "--memory", memory, "--cpus", cpus,
         "-v", f"{sample}:/in/{sample.name}:ro",

@@ -1603,12 +1603,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     r_approve = review_subs.add_parser("approve", help="Accept a proposed claim.")
     r_approve.add_argument("claim_id")
-    r_approve.add_argument("--reviewer", help="Defaults to $USER / %USERNAME%.")
+    r_approve.add_argument("--reviewer", help="Defaults to $USER / %%USERNAME%%.")
     r_approve.add_argument("--note", help="Recorded as an annotation on the claim.")
 
     r_reject = review_subs.add_parser("reject", help="Reject a proposed claim.")
     r_reject.add_argument("claim_id")
-    r_reject.add_argument("--reviewer", help="Defaults to $USER / %USERNAME%.")
+    r_reject.add_argument("--reviewer", help="Defaults to $USER / %%USERNAME%%.")
     r_reject.add_argument("--note", help="Recorded as an annotation on the claim.")
 
     for sub in (r_list, r_approve, r_reject):

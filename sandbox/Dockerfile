@@ -1,5 +1,5 @@
 # Network-less analysis sandbox for Ultron: Ghidra + Ultron in a locked-down container.
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:21-jdk
 RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-pip python3-venv unzip curl ca-certificates binwalk \
     && rm -rf /var/lib/apt/lists/*
 ARG GHIDRA_URL=https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_11.4.3_build/ghidra_11.4.3_PUBLIC_20251203.zip
