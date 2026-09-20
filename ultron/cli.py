@@ -1188,6 +1188,23 @@ def cmd_mcp(args: argparse.Namespace) -> int:
     return serve_project(root, read_only=args.read_only)
 
 
+def cmd_sandbox(args: argparse.Namespace) -> int:
+    import subprocess as _sp
+    from pathlib import Path as _P
+
+    from ultron import sandbox
+
+    if not sandbox.docker_available():
+        raise UltronError("Docker is not running; start Docker Desktop first.")
+    if args.sandbox_action == "build":
+        return _sp.run(sandbox.build_image_command(_P(__file__).resolve().parents[1])).returncode
+    project = _P(args.project or ".")
+    if not args.sample:
+        raise UltronError("give the sample to analyze: ultron sandbox analyze <file>")
+    cmd = sandbox.build_run_command(_P(args.sample), project)
+    return _sp.run(cmd).returncode
+
+
 def cmd_eval(args: argparse.Namespace) -> int:
     from ultron.eval import run_suites
 
@@ -1634,6 +1651,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     a_secrets.add_argument("--batch-size", type=int, default=20, dest="batch_size")
     a_secrets.set_defaults(func=cmd_agent_secrets)
+
+    p_sb = subparsers.add_parser("sandbox", help="Analyze a sample inside a network-less Docker container.")
+    p_sb.add_argument("sandbox_action", choices=["build", "analyze"])
+    p_sb.add_argument("sample", nargs="?", help="Sample file to analyze (analyze only).")
+    p_sb.add_argument("--project", help="Project directory (default: current directory).")
+    p_sb.set_defaults(func=cmd_sandbox)
 
     p_mcp = subparsers.add_parser("mcp", help="Serve the project over MCP on stdio.")
     p_mcp.add_argument(
