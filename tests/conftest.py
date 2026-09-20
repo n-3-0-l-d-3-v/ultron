@@ -183,3 +183,9 @@ def triaged_elf(project, elf_sample):
         project, elf_sample, logical_path="bin/firmware_agent"
     )
     return project, result.objects[0]
+
+
+@pytest.fixture(autouse=True)
+def _no_ambient_vault(monkeypatch):
+    """Dev machine sets a real VAULT_PATH; tests must never touch it."""
+    monkeypatch.delenv("VAULT_PATH", raising=False)
