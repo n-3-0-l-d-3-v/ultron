@@ -33,6 +33,20 @@ DEFAULT_OLLAMA_HOST = "http://localhost:11434"
 DEFAULT_TIMEOUT_SECONDS = 60.0
 
 
+OLLAMA_DEFAULT_CTX = 4096
+
+
+def ollama_ctx(prompt: str, reply_tokens: int) -> dict:
+    """Ollama silently drops the START of a prompt that overflows its
+    4096-token default window -- for `ask`, the instructions that demand
+    evidence citations. Grow num_ctx only when this prompt needs it
+    (~3.5 chars/token, conservative); small prompts keep the default."""
+    need = int(len(prompt) / 3.5) + reply_tokens
+    ctx = OLLAMA_DEFAULT_CTX
+    while ctx < need and ctx < 32768:
+        ctx *= 2
+    return {"num_ctx": ctx} if ctx > OLLAMA_DEFAULT_CTX else {}
+
 class LLMBackend(Protocol):
     """Anything that can turn a prompt into text, locally."""
 
@@ -147,7 +161,7 @@ class OllamaBackend:
                 "model": self.model,
                 "prompt": prompt,
                 "stream": False,
-                "options": {"num_predict": max_tokens},
+                "options": {"num_predict": max_tokens, **ollama_ctx(prompt, max_tokens)},
             }
         ).encode("utf-8")
         request = urllib.request.Request(

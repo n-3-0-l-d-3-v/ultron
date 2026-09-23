@@ -342,3 +342,10 @@ def test_no_mcp_tool_exposes_the_secrets_agent():
 
     names = set(tools.TOOLS)
     assert not any("agent" in name.lower() for name in names)
+
+
+def test_ollama_ctx_grows_only_when_prompt_needs_it():
+    from ultron.agents.backend import ollama_ctx
+    assert ollama_ctx("short", 512) == {}
+    assert ollama_ctx("x" * 14000, 512) == {"num_ctx": 8192}
+    assert ollama_ctx("x" * 10**7, 512) == {"num_ctx": 32768}
