@@ -144,6 +144,14 @@ def cmd_analyze(args: argparse.Namespace) -> int:
 
         payload = [r.to_record() for r in results]
 
+        if args.vault_note or (os.environ.get("VAULT_PATH") and not args.no_vault_note):
+            from ultron import summary, vault as _vault
+
+            title, body, cited = summary.summarize(project.find_claims(limit=5000), args.path or os.path.basename(args.file))
+            note = _vault.write_finding(title, body, vault_root=_vault.default_vault_root(),
+                                        claim_ids=cited, tags=["ultron", "re-summary"])
+            _warn(f"vault note (pending review): {note.path}")
+
         def render(records: list[dict[str, Any]]) -> None:
             for record in records:
                 details = record["details"]
@@ -1360,6 +1368,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_analyze.add_argument("--string-limit", type=int, default=3000)
     p_analyze.add_argument("--decompile-limit", type=int, default=40)
     p_analyze.add_argument("--max-depth", type=int, default=3)
+    p_analyze.add_argument("--vault-note", action="store_true", help="Write a pending summary note to the vault (default when VAULT_PATH is set).")
+    p_analyze.add_argument("--no-vault-note", action="store_true", help="Never write the vault summary note.")
     p_analyze.set_defaults(func=cmd_analyze)
 
     p_import = subparsers.add_parser(

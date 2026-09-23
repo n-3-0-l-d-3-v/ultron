@@ -326,7 +326,7 @@ ultron doctor
 ## Running the tests
 
 ```bash
-python -m pytest              # 388 tests
+python -m pytest              # 391 tests
 python -m pytest -q tests/test_evidence_model.py   # the invariants alone
 ```
 
