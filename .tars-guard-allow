@@ -1,0 +1,5 @@
+# Deliberate fake secrets: Ultron's secret-detector fixtures and demo binaries.
+examples/src/*
+tests/fixtures/*
+tests/test_adapters.py
+tests/test_agents.py
